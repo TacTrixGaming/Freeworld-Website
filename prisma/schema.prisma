@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  REVIEWER
+  ADMIN
+  WEBSITE_DEVELOPER
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  INTERVIEW
+  ACCEPTED
+  DENIED
+  WITHDRAWN
+}
+
+model User {
+  id                  String                  @id @default(cuid())
+  discordId           String                  @unique
+  username            String
+  displayName         String?
+  avatarUrl           String?
+  role                UserRole                @default(USER)
+  permissionOverrides Json?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  lastLoginAt         DateTime                @default(now())
+  submissions         ApplicationSubmission[] @relation("SubmissionOwner")
+  reviews             ApplicationSubmission[] @relation("SubmissionReviewer")
+  auditLogs           AuditLog[]
+}
+
+model ApplicationType {
+  id          String                  @id @default(cuid())
+  slug        String                  @unique
+  name        String
+  description String
+  icon        String                  @default("clipboard")
+  isOpen      Boolean                 @default(true)
+  order       Int                     @default(0)
+  fields      Json
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  submissions ApplicationSubmission[]
+}
+
+model ApplicationSubmission {
+  id                String            @id @default(cuid())
+  applicationTypeId String
+  userId            String
+  status            ApplicationStatus @default(SUBMITTED)
+  answers           Json
+  reviewNotes       String?
+  reviewedById      String?
+  submittedAt       DateTime          @default(now())
+  reviewedAt        DateTime?
+  updatedAt         DateTime          @updatedAt
+  applicationType   ApplicationType   @relation(fields: [applicationTypeId], references: [id], onDelete: Cascade)
+  user              User              @relation("SubmissionOwner", fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy        User?             @relation("SubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status, submittedAt])
+  @@index([userId, submittedAt])
+}
+
+model RuleCategory {
+  id          String @id @default(cuid())
+  title       String
+  description String?
+  order       Int    @default(0)
+  rules       Rule[]
+}
+
+model Rule {
+  id         String       @id @default(cuid())
+  categoryId String
+  code       String
+  title      String
+  body       String
+  order      Int          @default(0)
+  enabled    Boolean      @default(true)
+  category   RuleCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId, order])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  targetType String
+  targetId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+}
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
