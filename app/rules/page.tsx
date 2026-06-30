@@ -28,7 +28,7 @@ export default async function RulesPage() {
           <h1>Server Rules</h1>
           <p>
             These rules protect fair play, serious roleplay, and a respectful
-            community. Not knowing a rule does not exempt a player from it.
+            community. Review them before playing; not knowing a rule does not exempt a player from it.
           </p>
         </div>
 

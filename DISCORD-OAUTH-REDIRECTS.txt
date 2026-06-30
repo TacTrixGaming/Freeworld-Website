@@ -1,0 +1,15 @@
+Add these under Discord Developer Portal -> Your Application -> OAuth2 -> Redirects
+
+LOCAL
+http://localhost:3000/api/auth/callback/discord
+
+VERCEL
+https://YOUR-PROJECT.vercel.app/api/auth/callback/discord
+
+CUSTOM DOMAIN (optional)
+https://YOUR-DOMAIN.com/api/auth/callback/discord
+
+Rules:
+- Use the exact domain used by NEXTAUTH_URL.
+- Do not add a trailing slash.
+- The Client Secret belongs only in Vercel environment variables.

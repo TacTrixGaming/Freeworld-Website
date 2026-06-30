@@ -22,7 +22,8 @@ export default async function AdminUsersPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  await requirePermission(PERMISSIONS.USERS_VIEW);
+  const session = await requirePermission(PERMISSIONS.USERS_VIEW);
+  const canManage = session.user.permissions.includes(PERMISSIONS.USERS_MANAGE);
   const params = await searchParams;
   const users = await prisma.user.findMany({
     orderBy: { lastLoginAt: "desc" }
@@ -40,6 +41,12 @@ export default async function AdminUsersPage({
 
       {params.updated === "1" && (
         <div className="alert alert-success">User access updated.</div>
+      )}
+      {params.error === "invalid-role" && (
+        <div className="alert alert-error">That role cannot be assigned from the dashboard.</div>
+      )}
+      {params.error === "protected-owner" && (
+        <div className="alert alert-error">Configured owner accounts cannot be changed.</div>
       )}
 
       <div className="user-admin-list">
@@ -66,15 +73,22 @@ export default async function AdminUsersPage({
                   This Discord ID is listed in OWNER_DISCORD_IDS. It is always
                   labeled Website Developer and automatically has every permission.
                 </div>
+              ) : !canManage ? (
+                <div className="owner-notice">
+                  You can view this account, but only a configured Website Developer
+                  can change roles and permission overrides.
+                </div>
               ) : (
                 <form action={updateUserAccess} className="form-stack user-access-form">
                   <input type="hidden" name="userId" value={user.id} />
                   <div className="form-group">
                     <label htmlFor={`role-${user.id}`}>Base role</label>
                     <select id={`role-${user.id}`} name="role" defaultValue={user.role}>
-                      {Object.values(UserRole).map((option) => (
-                        <option value={option} key={option}>{roleLabel(option)}</option>
-                      ))}
+                      {Object.values(UserRole)
+                        .filter((option) => option !== UserRole.WEBSITE_DEVELOPER)
+                        .map((option) => (
+                          <option value={option} key={option}>{roleLabel(option)}</option>
+                        ))}
                     </select>
                   </div>
 

@@ -1,0 +1,20 @@
+BUILD VERIFICATION — 2026-06-30
+
+Passed:
+- Public npm lockfile validation
+- Zero private OpenAI/sandbox registry URLs
+- npm dependency tree resolution
+- Strict TypeScript check: tsc --noEmit
+- ESLint check
+- Deployment preflight validation
+- Next.js 16.2.9 optimized production compilation
+- Route generation for public, authenticated, admin, OAuth, health, robots, and sitemap routes
+
+The optimized production build completed successfully using Node.js 22.16.0 and npm 10.9.2.
+
+Credential-dependent checks not performed in the build sandbox:
+- Connecting to your live PostgreSQL database
+- Applying the migration to your live database
+- Completing a real Discord OAuth login
+
+Those checks require the private environment values described in START-HERE.md.

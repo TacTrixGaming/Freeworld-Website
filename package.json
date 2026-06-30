@@ -1,17 +1,27 @@
 {
-  "name": "freeworld-server-website",
+  "name": "freeworld-rp-website",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "packageManager": "npm@10.9.2",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "npm run preflight && prisma generate && prisma migrate deploy && prisma db seed && next build",
+    "vercel-build": "npm run build",
     "start": "next start",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck",
+    "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "preflight": "node scripts/preflight.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.19.0",

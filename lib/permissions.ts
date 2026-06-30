@@ -46,7 +46,12 @@ export function isConfiguredOwner(discordId?: string | null) {
 }
 
 export function effectiveRole(role: UserRole, discordId?: string | null): UserRole {
-  return isConfiguredOwner(discordId) ? "WEBSITE_DEVELOPER" : role;
+  if (isConfiguredOwner(discordId)) {
+    return "WEBSITE_DEVELOPER";
+  }
+
+  // Website Developer is reserved for IDs in OWNER_DISCORD_IDS.
+  return role === "WEBSITE_DEVELOPER" ? "ADMIN" : role;
 }
 
 export function resolvePermissions(
@@ -54,7 +59,7 @@ export function resolvePermissions(
   discordId?: string | null,
   overrides?: unknown
 ): Permission[] {
-  if (isConfiguredOwner(discordId) || role === "WEBSITE_DEVELOPER") {
+  if (isConfiguredOwner(discordId)) {
     return [...ALL_PERMISSIONS];
   }
 

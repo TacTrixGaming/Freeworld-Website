@@ -25,15 +25,13 @@ export default async function HomePage() {
         <div className="container hero-content">
           <div className="eyebrow">
             <span className="live-dot" />
-            Serious roleplay. Player-driven stories.
+            {siteConfig.tagline}
           </div>
           <h1>
-            Your story starts in <span>FreeWorld.</span>
+            Your story starts in <span>{siteConfig.name}.</span>
           </h1>
           <p>
-            A detailed FiveM community built around meaningful progression,
-            realistic systems, and roleplay that gives every player room to
-            create something memorable.
+            {siteConfig.description}
           </p>
           <div className="hero-actions">
             <a className="button" href={siteConfig.connectUrl}>
@@ -109,7 +107,7 @@ export default async function HomePage() {
             <span className="eyebrow plain">Built for serious RP</span>
             <h2>A city shaped by its players.</h2>
             <p>
-              FreeWorld focuses on detailed systems without losing sight of the
+              {siteConfig.name} focuses on detailed systems without losing sight of the
               people using them. Every job, department, business, and storyline
               should create opportunities for others.
             </p>

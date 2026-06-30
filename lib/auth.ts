@@ -3,6 +3,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { authEnv } from "@/lib/env";
 import {
   effectiveRole,
   resolvePermissions,
@@ -20,15 +21,15 @@ function discordAvatarUrl(discordId: string, avatar?: string | null) {
 }
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: authEnv.secret,
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60
   },
   providers: [
     DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID || "",
-      clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
+      clientId: authEnv.discordClientId,
+      clientSecret: authEnv.discordClientSecret,
       authorization: { params: { scope: "identify" } }
     })
   ],
